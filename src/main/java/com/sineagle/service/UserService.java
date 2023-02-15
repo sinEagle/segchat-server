@@ -19,4 +19,9 @@ public interface UserService {
      */
     public Users saveUser(Users user);
 
+    /**
+     *  修改用户记录
+     */
+    public Users updateUserInfo(Users user);
+
 }

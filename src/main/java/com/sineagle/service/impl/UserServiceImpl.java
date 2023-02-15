@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public Users saveUser(Users user) {
         String userId = sid.nextShort();
@@ -56,4 +57,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public Users updateUserInfo(Users user) {
+        usersMapper.updateByPrimaryKeySelective(user);
+        return queryUsersById(user.getId());
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public Users queryUsersById(String userId) {
+        return usersMapper.selectByPrimaryKey(userId);
+    }
 }
