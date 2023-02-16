@@ -2,6 +2,8 @@ package com.sineagle.service;
 
 import com.sineagle.pojo.Users;
 
+import java.io.IOException;
+
 public interface UserService {
     /**
      * 判断用户名是否存在
@@ -17,7 +19,7 @@ public interface UserService {
     /**
      * 用户注册
      */
-    public Users saveUser(Users user);
+    public Users saveUser(Users user) throws IOException;
 
     /**
      *  修改用户记录

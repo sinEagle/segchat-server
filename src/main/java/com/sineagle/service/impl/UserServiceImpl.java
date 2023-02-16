@@ -3,12 +3,18 @@ package com.sineagle.service.impl;
 import com.sineagle.mapper.UsersMapper;
 import com.sineagle.pojo.Users;
 import com.sineagle.service.UserService;
+import com.sineagle.utils.FastDFSClient;
+import com.sineagle.utils.FileUtils;
+import com.sineagle.utils.QRCodeUtils;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tk.mybatis.mapper.entity.Example;
+
+import java.io.IOException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -17,6 +23,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private Sid sid;
+
+    @Autowired
+    private QRCodeUtils qrCodeUtils;
+
+    @Autowired
+    private FastDFSClient fastDFSClient;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -45,11 +57,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public Users saveUser(Users user) {
+    public Users saveUser(Users user) throws IOException {
         String userId = sid.nextShort();
-        // TODO 为每个用户生成一个唯一的二维码
-        user.setQrcode("");
+        // 为每个用户生成一个唯一的二维码
+        String qrcodePath = "E://user/" + userId + "qrcode.png";
+        // segchat_qrcode:[username]
+        qrCodeUtils.createQRCode(qrcodePath, "setchat_qrcode:" + user.getUsername());
+        MultipartFile qrCodeFile = FileUtils.fileToMultipart(qrcodePath);
+        String qrCodeUrl =  fastDFSClient.uploadQRCode(qrCodeFile);
 
+        user.setQrcode(qrCodeUrl);
         user.setId(userId);
         usersMapper.insert(user);
 
