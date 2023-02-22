@@ -1,6 +1,9 @@
 package com.sineagle.service.impl;
 
+import com.sineagle.enums.SearchFriendsStatusEnum;
+import com.sineagle.mapper.MyFriendsMapper;
 import com.sineagle.mapper.UsersMapper;
+import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
@@ -20,6 +23,9 @@ import java.io.IOException;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UsersMapper usersMapper;
+
+    @Autowired
+    private MyFriendsMapper myFriendsMapper;
 
     @Autowired
     private Sid sid;
@@ -85,4 +91,40 @@ public class UserServiceImpl implements UserService {
     public Users queryUsersById(String userId) {
         return usersMapper.selectByPrimaryKey(userId);
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Integer preconditionSearchFriends(String myUserId, String friendUsername) {
+        // 1. 搜索用户不存在，返回【无此用户】
+        Users user = queryUserInfoByUsername(friendUsername);
+
+        if (user == null) {
+            return SearchFriendsStatusEnum.USER_NOT_EXIST.status;
+        }
+        // 2. 搜索账号是你自己，返回【不能添加自己】
+        if (user.getId().equals(myUserId)) {
+            return SearchFriendsStatusEnum.NOT_YOURSELF.status;
+        }
+        // 3. 搜索的朋友已经是你的好友，返回【该用户已经是你的好友】
+        Example mfe = new Example(MyFriends.class);
+        Example.Criteria mfc = mfe.createCriteria();
+        mfc.andEqualTo("myUserId", myUserId);
+        mfc.andEqualTo("myFriendUserId", user.getId());
+        MyFriends myFriendRel = myFriendsMapper.selectOneByExample(mfe);
+        if (myFriendRel != null) {
+            return SearchFriendsStatusEnum.ALREADY_FRIENDS.status;
+        }
+
+        return SearchFriendsStatusEnum.SUCCESS.status;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public Users queryUserInfoByUsername(String username) {
+        Example ue = new Example(Users.class);
+        Example.Criteria uc = ue.createCriteria();
+        uc.andEqualTo("username", username);
+        return usersMapper.selectOneByExample(ue);
+    }
+
 }
