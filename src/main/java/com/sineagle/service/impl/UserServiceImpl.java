@@ -4,9 +4,11 @@ import com.sineagle.enums.SearchFriendsStatusEnum;
 import com.sineagle.mapper.FriendsRequestMapper;
 import com.sineagle.mapper.MyFriendsMapper;
 import com.sineagle.mapper.UsersMapper;
+import com.sineagle.mapper.UsersMapperCustom;
 import com.sineagle.pojo.FriendsRequest;
 import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
+import com.sineagle.pojo.vo.FriendRequestVO;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
 import com.sineagle.utils.FileUtils;
@@ -21,11 +23,15 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UsersMapper usersMapper;
+
+    @Autowired
+    private UsersMapperCustom usersMapperCustom;
 
     @Autowired
     private MyFriendsMapper myFriendsMapper;
@@ -158,4 +164,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<FriendRequestVO> queryFriendRequestList(String acceptUserId) {
+        return usersMapperCustom.queryFriendRequestList(acceptUserId);
+    }
 }

@@ -1,8 +1,10 @@
 package com.sineagle.service;
 
 import com.sineagle.pojo.Users;
+import com.sineagle.pojo.vo.FriendRequestVO;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface UserService {
     /**
@@ -41,4 +43,8 @@ public interface UserService {
      */
     public void sendFriendRequest(String myUserId, String friendUsername);
 
+    /**
+     *  查询好友请求
+     */
+    public List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
 }

@@ -3,6 +3,7 @@ package com.sineagle.controller;
 import com.sineagle.enums.SearchFriendsStatusEnum;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.bo.UsersBO;
+import com.sineagle.pojo.vo.FriendRequestVO;
 import com.sineagle.pojo.vo.UsersVO;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/u")
@@ -141,4 +144,27 @@ public class UserController {
         return IMoocJSONResult.ok();
     }
 
+    @PostMapping("/queryFriendRequests")
+    public IMoocJSONResult queryFriendRequests(String userId) {
+        // 0. 判断是否为空
+        if (StringUtils.isBlank(userId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        // 1. 查询用户接受到的朋友申请
+        List<FriendRequestVO> result = userService.queryFriendRequestList(userId);
+        
+        return IMoocJSONResult.ok(result);
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
