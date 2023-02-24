@@ -2,6 +2,7 @@ package com.sineagle.service;
 
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.vo.FriendRequestVO;
+import com.sineagle.pojo.vo.MyFriendsVO;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,5 +59,10 @@ public interface UserService {
      *   1. 保存好友  2. 逆向保存好友 3. 删除好友请求记录
      */
     public void passFriendRequest(String sendUserId, String acceptUserId);
+
+    /**
+     *  查询好友列表
+     */
+    public List<MyFriendsVO> queryMyFriends(String userId);
 
 }

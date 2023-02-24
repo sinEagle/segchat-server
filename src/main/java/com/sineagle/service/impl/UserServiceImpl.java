@@ -9,6 +9,7 @@ import com.sineagle.pojo.FriendsRequest;
 import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.vo.FriendRequestVO;
+import com.sineagle.pojo.vo.MyFriendsVO;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
 import com.sineagle.utils.FileUtils;
@@ -196,5 +197,12 @@ public class UserServiceImpl implements UserService {
         myFriends.setMyFriendUserId(acceptUserId);
         myFriends.setMyUserId(sendUserId);
         myFriendsMapper.insert(myFriends);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<MyFriendsVO> queryMyFriends(String userId) {
+        List<MyFriendsVO> myFriends = usersMapperCustom.queryMyFriends(userId);
+        return myFriends;
     }
 }

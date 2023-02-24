@@ -5,6 +5,7 @@ import com.sineagle.enums.SearchFriendsStatusEnum;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.bo.UsersBO;
 import com.sineagle.pojo.vo.FriendRequestVO;
+import com.sineagle.pojo.vo.MyFriendsVO;
 import com.sineagle.pojo.vo.UsersVO;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
@@ -182,6 +183,20 @@ public class UserController {
         return IMoocJSONResult.ok();
     }
 
+    /**
+     *  查询好友列表
+     */
+    @PostMapping("/myFriends")
+    public IMoocJSONResult myFriends(String userId) {
+        // 0. userId判断不能为空
+        if (StringUtils.isBlank(userId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+        // 1. 数据库查询好友列表
+        List<MyFriendsVO> myFriends = userService.queryMyFriends(userId);
+
+        return IMoocJSONResult.ok(myFriends);
+    }
 
 }
 
