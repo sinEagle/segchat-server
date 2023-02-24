@@ -1,5 +1,6 @@
 package com.sineagle.controller;
 
+import com.sineagle.enums.OperatorFriendRequestTypeEnum;
 import com.sineagle.enums.SearchFriendsStatusEnum;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.bo.UsersBO;
@@ -155,6 +156,30 @@ public class UserController {
         List<FriendRequestVO> result = userService.queryFriendRequestList(userId);
         
         return IMoocJSONResult.ok(result);
+    }
+
+    /**
+     * 接收方通过或忽略好友请求
+     */
+    @PostMapping("/operFriendRequest")
+    public IMoocJSONResult operFriendRequest(String acceptUserId, String sendUserId, Integer operType) {
+        // 0. acceptUserId sendUserId operType 判断不能为空
+        if (StringUtils.isBlank(acceptUserId) || StringUtils.isBlank(acceptUserId) || operType == null) {
+            return IMoocJSONResult.errorMsg("");
+        }
+        // 1. 如果operType没有对应枚举值，则直接抛出空错误信息
+        if (StringUtils.isBlank(OperatorFriendRequestTypeEnum.getMsgByType(operType)) ){
+            return IMoocJSONResult.errorMsg("");
+        }
+        if (operType == OperatorFriendRequestTypeEnum.IGNORE.type) {
+            // 2. 判断如果忽略好友请求，则直接删除好友请求的数据库表记录
+            userService.deleteFriendRequest(sendUserId, acceptUserId);
+        } else if (operType == OperatorFriendRequestTypeEnum.PASS.type) {
+            // 3. 判断如果是通过好友请求，则互相增加好友记录到数据库对应的表
+            // 然后删除好友请求的数据库表记录
+            userService.passFriendRequest(sendUserId, acceptUserId);
+        }
+        return IMoocJSONResult.ok();
     }
 
 
