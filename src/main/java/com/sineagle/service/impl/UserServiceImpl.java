@@ -1,10 +1,9 @@
 package com.sineagle.service.impl;
 
+import com.sineagle.enums.MsgSignFlagEnum;
 import com.sineagle.enums.SearchFriendsStatusEnum;
-import com.sineagle.mapper.FriendsRequestMapper;
-import com.sineagle.mapper.MyFriendsMapper;
-import com.sineagle.mapper.UsersMapper;
-import com.sineagle.mapper.UsersMapperCustom;
+import com.sineagle.mapper.*;
+import com.sineagle.netty.ChatMsg;
 import com.sineagle.pojo.FriendsRequest;
 import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
@@ -39,6 +38,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private FriendsRequestMapper friendsRequestMapper;
+
+    @Autowired
+    private ChatMsgMapper chatMsgMapper;
 
     @Autowired
     private Sid sid;
@@ -204,5 +206,29 @@ public class UserServiceImpl implements UserService {
     public List<MyFriendsVO> queryMyFriends(String userId) {
         List<MyFriendsVO> myFriends = usersMapperCustom.queryMyFriends(userId);
         return myFriends;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public String saveMsg(ChatMsg chatMsg) {
+        com.sineagle.pojo.ChatMsg msgDB = new com.sineagle.pojo.ChatMsg();
+        String msgId = sid.nextShort();
+        msgDB.setId(msgId);
+        msgDB.setAcceptUserId(chatMsg.getReceiverId());
+        msgDB.setSendUserId(chatMsg.getSenderId());
+        msgDB.setCreateTime(new Date());
+        msgDB.setSignFlag(MsgSignFlagEnum.unsign.type);
+        msgDB.setMsg(chatMsg.getMsg());
+
+        chatMsgMapper.insert(msgDB);
+
+        return msgId;
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void updateMsgSigned(List<String> msgIdList) {
+        usersMapperCustom.batchUpdateMsgSigned(msgIdList);
     }
 }

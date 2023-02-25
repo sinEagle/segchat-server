@@ -1,5 +1,6 @@
 package com.sineagle.service;
 
+import com.sineagle.netty.ChatMsg;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.vo.FriendRequestVO;
 import com.sineagle.pojo.vo.MyFriendsVO;
@@ -64,5 +65,15 @@ public interface UserService {
      *  查询好友列表
      */
     public List<MyFriendsVO> queryMyFriends(String userId);
+
+    /**
+     *   保存聊天消息到数据库
+     */
+    public String saveMsg(ChatMsg chatMsg);
+
+    /**
+     *   批量签收消息
+     */
+    public void updateMsgSigned(List<String> msgIdList);
 
 }
