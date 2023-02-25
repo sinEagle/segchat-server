@@ -2,6 +2,7 @@ package com.sineagle.controller;
 
 import com.sineagle.enums.OperatorFriendRequestTypeEnum;
 import com.sineagle.enums.SearchFriendsStatusEnum;
+import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.bo.UsersBO;
 import com.sineagle.pojo.vo.FriendRequestVO;
@@ -180,7 +181,9 @@ public class UserController {
             // 然后删除好友请求的数据库表记录
             userService.passFriendRequest(sendUserId, acceptUserId);
         }
-        return IMoocJSONResult.ok();
+
+        List<MyFriendsVO> myFriends = userService.queryMyFriends(acceptUserId);
+        return IMoocJSONResult.ok(myFriends);
     }
 
     /**
@@ -188,6 +191,7 @@ public class UserController {
      */
     @PostMapping("/myFriends")
     public IMoocJSONResult myFriends(String userId) {
+        System.out.println("执行了!");
         // 0. userId判断不能为空
         if (StringUtils.isBlank(userId)) {
             return IMoocJSONResult.errorMsg("");
