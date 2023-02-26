@@ -2,6 +2,7 @@ package com.sineagle.controller;
 
 import com.sineagle.enums.OperatorFriendRequestTypeEnum;
 import com.sineagle.enums.SearchFriendsStatusEnum;
+import com.sineagle.pojo.ChatMsg;
 import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
 import com.sineagle.pojo.bo.UsersBO;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -191,7 +193,6 @@ public class UserController {
      */
     @PostMapping("/myFriends")
     public IMoocJSONResult myFriends(String userId) {
-        System.out.println("执行了!");
         // 0. userId判断不能为空
         if (StringUtils.isBlank(userId)) {
             return IMoocJSONResult.errorMsg("");
@@ -200,6 +201,20 @@ public class UserController {
         List<MyFriendsVO> myFriends = userService.queryMyFriends(userId);
 
         return IMoocJSONResult.ok(myFriends);
+    }
+
+    /**
+     *  用户手机端获取未签收的消息列表
+     */
+    @PostMapping("/getUnReadMsgList")
+    public IMoocJSONResult getUnreadMsgList(String acceptUserId) {
+        if (StringUtils.isBlank(acceptUserId)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+        // 查询列表
+        List<ChatMsg> unreadMsgList = userService.getUnReadMsgList(acceptUserId);
+
+        return IMoocJSONResult.ok(unreadMsgList);
     }
 
 }

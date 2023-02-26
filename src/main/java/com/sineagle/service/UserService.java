@@ -76,4 +76,9 @@ public interface UserService {
      */
     public void updateMsgSigned(List<String> msgIdList);
 
+    /**
+     * 获取未签收消息列表
+     */
+    public List<com.sineagle.pojo.ChatMsg> getUnReadMsgList(String acceptUserId);
+
 }

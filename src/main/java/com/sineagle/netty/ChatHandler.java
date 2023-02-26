@@ -50,7 +50,6 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
             String msgText = chatMsg.getMsg();
             String receiverId = chatMsg.getReceiverId();
             String senderId = chatMsg.getSenderId();
-
             // 保存消息到数据库，并且标记为未签收
             UserService userService = (UserService) SpringUtil.getBean("userServiceImpl");
             String msgId = userService.saveMsg(chatMsg);
@@ -89,7 +88,6 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
                     msgIdList.add(mid);
                 }
             }
-            System.out.println(msgIdList.toString());
             if (msgIdList != null && !msgIdList.isEmpty() && msgIdList.size() > 0) {
                 // 批量签收
                 userService.updateMsgSigned(msgIdList);

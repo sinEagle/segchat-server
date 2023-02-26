@@ -246,4 +246,17 @@ public class UserServiceImpl implements UserService {
     public void updateMsgSigned(List<String> msgIdList) {
         usersMapperCustom.batchUpdateMsgSigned(msgIdList);
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<com.sineagle.pojo.ChatMsg> getUnReadMsgList(String acceptUserId) {
+        Example chatExample = new Example(com.sineagle.pojo.ChatMsg.class);
+        Example.Criteria chatCriteria = chatExample.createCriteria();
+        chatCriteria.andEqualTo("signFlag", 0);
+        chatCriteria.andEqualTo("acceptUserId", acceptUserId);
+
+        List<com.sineagle.pojo.ChatMsg> result = (List<com.sineagle.pojo.ChatMsg>) chatMsgMapper.selectByExample(chatExample);
+
+        return result;
+    }
 }
