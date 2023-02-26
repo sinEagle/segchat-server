@@ -1,9 +1,12 @@
 package com.sineagle.service.impl;
 
+import com.sineagle.enums.MsgActionEnum;
 import com.sineagle.enums.MsgSignFlagEnum;
 import com.sineagle.enums.SearchFriendsStatusEnum;
 import com.sineagle.mapper.*;
 import com.sineagle.netty.ChatMsg;
+import com.sineagle.netty.DataContent;
+import com.sineagle.netty.UserChannelRel;
 import com.sineagle.pojo.FriendsRequest;
 import com.sineagle.pojo.MyFriends;
 import com.sineagle.pojo.Users;
@@ -12,7 +15,10 @@ import com.sineagle.pojo.vo.MyFriendsVO;
 import com.sineagle.service.UserService;
 import com.sineagle.utils.FastDFSClient;
 import com.sineagle.utils.FileUtils;
+import com.sineagle.utils.JsonUtils;
 import com.sineagle.utils.QRCodeUtils;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -189,6 +195,15 @@ public class UserServiceImpl implements UserService {
         saveFriends(sendUserId, acceptUserId);
         saveFriends(acceptUserId, sendUserId);
         deleteFriendRequest(sendUserId, acceptUserId);
+
+        Channel sendChannel = UserChannelRel.get(sendUserId);
+        if (sendChannel != null) {
+            // 使用websocket主动推送到请求发起者，更新他的通讯录列表为最新
+            DataContent dataContent = new DataContent();
+            dataContent.setAction(MsgActionEnum.PULL_FRIEND.type);
+            sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.objectToJson(dataContent)));
+        }
+
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
