@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     // 用于记录和管理所有客户端的channel
-    private static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         // 获取客户端传输过来的消息
@@ -95,6 +95,7 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
         } else if (action == MsgActionEnum.KEEPALIVE.type) {
             //  2.4 心跳类型的消息
+            System.out.println("收到来自channel为[" + currentChannel + "]的心跳包....");
         }
     }
 
@@ -111,6 +112,8 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         // 当触发handlerRemoved，ChannelGroup会自动移除对应客户端的channel
+        String channelId = ctx.channel().id().asShortText();
+        System.out.println("客户端被移除！ channelId为: " + channelId);
         users.remove(ctx.channel());
     }
 
